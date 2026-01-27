@@ -1,39 +1,28 @@
 package com.example.myfulgora.ui.screens.auth
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myfulgora.R
 import com.example.myfulgora.ui.components.FulgoraBackground
+import com.example.myfulgora.ui.components.CustomDarkInput
+import com.example.myfulgora.ui.components.CustomDarkPasswordInput
+import com.example.myfulgora.ui.theme.AppIcons
+import com.example.myfulgora.ui.theme.GreenFresh
 import com.example.myfulgora.ui.viewmodel.LoginState
 import com.example.myfulgora.ui.viewmodel.LoginViewModel
-import com.example.myfulgora.ui.theme.GreenFresh
-import com.example.myfulgora.ui.theme.GreenDeep
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
@@ -44,37 +33,32 @@ fun LoginScreen(
     val username by viewModel.username.collectAsState()
     val password by viewModel.password.collectAsState()
 
-    var passwordVisible by remember { mutableStateOf(false) }
-
-    // O Gradiente do Botão (Linear Horizontal: GreenFresh -> GreenDeep)
-    val brandGradient = Brush.horizontalGradient(
-        colors = listOf(GreenFresh, GreenDeep)
-    )
-
     LaunchedEffect(state) {
         if (state is LoginState.Success) {
             onLoginSuccess()
         }
     }
 
-    // AQUI ESTÁ A CORREÇÃO: Usamos o componente FulgoraBackground
     FulgoraBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
-                .statusBarsPadding(), // Respeita a zona da bateria/relógio
+                .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
 
-            // 1. LOGÓTIPO
+            // 1. LOGÓTIPO E TEXTO (Como tinhas antes)
             Image(
                 painter = painterResource(id = R.drawable.logo_app),
                 contentDescription = "Logo",
-                modifier = Modifier.width(120.dp),
+                modifier = Modifier.width(120.dp), // Voltou ao tamanho original
                 contentScale = ContentScale.Fit
             )
+
+            // Espaço opcional, se quiseres afastar o texto da imagem
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Welcome back, Rider",
@@ -84,131 +68,82 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // 2. CAMPOS DE TEXTO
-            // Username
-            OutlinedTextField(
-                value = username,
-                onValueChange = { viewModel.username.value = it },
-                label = { Text("Username") },
-                placeholder = { Text("Ex: username") },
-                leadingIcon = {
-                    Icon(
-                        Icons.Default.Person,
-                        contentDescription = null,
-                        tint = GreenFresh
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = GreenFresh,
-                    unfocusedBorderColor = Color.Gray,
-                    focusedLabelColor = GreenFresh,
-                    unfocusedLabelColor = Color.LightGray,
-                    cursorColor = GreenFresh,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
-                ),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            // 2. INPUTS (Estilo Novo)
+            CustomDarkInput(
+                text = username,
+                onTextChange = { viewModel.username.value = it },
+                placeholder = "Username",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password
-            OutlinedTextField(
-                value = password,
-                onValueChange = { viewModel.password.value = it },
-                label = { Text("Password") },
-                leadingIcon = {
-                    Icon(
-                        Icons.Default.Lock,
-                        contentDescription = null,
-                        tint = GreenFresh
-                    )
-                },
-                trailingIcon = {
-                    val image =
-                        if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = null, tint = Color.Gray)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = GreenFresh,
-                    unfocusedBorderColor = Color.Gray,
-                    focusedLabelColor = GreenFresh,
-                    unfocusedLabelColor = Color.LightGray,
-                    cursorColor = GreenFresh,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
-                ),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                )
+            CustomDarkPasswordInput(
+                text = password,
+                onTextChange = { viewModel.password.value = it },
+                placeholder = "Password",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
             )
 
-            // Link Esqueci a Password
+            // 3. LINK FORGOT PASSWORD
+            Spacer(modifier = Modifier.height(12.dp))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                TextButton(
-                    // 2. Aqui usamos o parâmetro novo.
-                    // Quando clicas, ele dispara o aviso para a MainActivity.
-                    onClick = onForgotPasswordClick
-                ) {
-                    Text("Forgot Password?", color = GreenFresh, fontSize = 12.sp)
-                }
+                Text(
+                    text = "Forgot Password?",
+                    color = GreenFresh,
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .padding(end = 24.dp)
+                        .clickable { onForgotPasswordClick() }
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Erro
+            // ERRO
             if (state is LoginState.Error) {
                 Text(
                     text = (state as LoginState.Error).message,
                     color = Color(0xFFFF5252),
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // 3. BOTÃO DE LOGIN (Ajustado e com Gradiente)
-            Button(
-                onClick = { viewModel.fazerLogin() },
-                modifier = Modifier.height(50.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent
-                ),
-                contentPadding = PaddingValues(),
-                enabled = state !is LoginState.Loading
+            // 4. BOTÃO LOG IN (Estilo Novo com Imagem)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .clickable(enabled = state !is LoginState.Loading) {
+                        viewModel.fazerLogin()
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .background(brandGradient) // O Gradiente Horizontal
-                        .padding(horizontal = 48.dp), // Largura visual do botão
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (state is LoginState.Loading) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    } else {
-                        Text(
-                            text = "Log In",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
+                Image(
+                    painter = painterResource(id = AppIcons.Actions.Button),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (state is LoginState.Loading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = "Login",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
                 }
             }
         }

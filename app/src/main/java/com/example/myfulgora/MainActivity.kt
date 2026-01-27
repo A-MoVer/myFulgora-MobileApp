@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myfulgora.ui.screens.SplashScreen
 import com.example.myfulgora.ui.screens.auth.OnboardingScreen
 import com.example.myfulgora.ui.screens.auth.LoginScreen
+import com.example.myfulgora.ui.screens.auth.ForgotPasswordScreen
 import com.example.myfulgora.ui.screens.MainScreen
 
 
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 // DICA: Para testares rápido, muda "splash" para "login" temporariamente
-                NavHost(navController = navController, startDestination = "login") {
+                NavHost(navController = navController, startDestination = "splash") {
 
                     // 1. Splash
                     composable("splash") {
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     composable("onboarding") {
                         OnboardingScreen(
                             onFinish = {
-                                navController.navigate("home") {
+                                navController.navigate("login") {
                                     popUpTo("onboarding") { inclusive = true }
                                 }
                             }

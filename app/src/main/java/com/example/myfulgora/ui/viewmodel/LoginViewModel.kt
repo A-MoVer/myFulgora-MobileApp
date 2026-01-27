@@ -27,6 +27,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     var password = MutableStateFlow("")
 
     fun fazerLogin() {
+        println("DEBUG: Username digitado: ${username.value}")
+        println("DEBUG: Password digitada: ${password.value}")
         val user = username.value
         val pass = password.value
 

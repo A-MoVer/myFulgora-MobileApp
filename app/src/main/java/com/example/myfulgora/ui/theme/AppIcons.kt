@@ -27,6 +27,12 @@ object AppIcons {
 
     // Grupo: Ações
     object Actions {
+        val Button = R.drawable.button
+        val ArrowLeft0 = R.drawable.arrow_bike_left
+        val ArrowLeft1 = R.drawable.arrow_bike_left_color
+        val ArrowRight0 = R.drawable.arrow_bike_right
+        val ArrowRight1 = R.drawable.arrow_bike_right_color
+
     }
 
     object Battery {
@@ -41,7 +47,4 @@ object AppIcons {
 
     }
 
-    object Button {
-        val Button = R.drawable.button
-    }
 }
