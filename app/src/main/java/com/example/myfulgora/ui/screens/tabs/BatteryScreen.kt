@@ -6,12 +6,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.rounded.Autorenew
+import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Thermostat
-import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,83 +20,90 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myfulgora.ui.components.FulgoraBackground
+import com.example.myfulgora.ui.components.FulgoraTopBar
 import com.example.myfulgora.ui.theme.AppIcons
+import com.example.myfulgora.ui.theme.CardBackgroundColor // Certifica-te que tens esta cor no Theme/Color
+import com.example.myfulgora.ui.theme.Dimens
 import com.example.myfulgora.ui.theme.GreenFresh
 
 @Composable
 fun BatteryScreen() {
     FulgoraBackground {
-        // BoxWithConstraints para obter tamanhos reais do ecrã
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
 
             val screenW = maxWidth
-            val screenH = maxHeight
+            // val screenH = maxHeight // Podes usar se precisares de alturas relativas
 
-            // Tamanhos dinâmicos para o Header
-            val iconSizeStandard = screenW * 0.07f
-            val verticalPadding = screenH * 0.03f
+            // --- MISTURA DINÂMICO vs ESTÁTICO ---
+            val iconSize = screenW * Dimens.IconScaleRatio       // Dinâmico
+            val paddingSide = screenW * Dimens.SideMarginRatio   // Dinâmico (Margem Lateral)
 
-            // Estado do Scroll
             val scrollState = rememberScrollState()
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState) // Ativa o Scroll
-                    .padding(horizontal = 24.dp)
-                    .padding(top = 16.dp),
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = paddingSide)
+                    .padding(top = Dimens.TopPadding), // 16.dp fixo (Padrão)
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                // 1. CABEÇALHO
-                BatteryScreenHeader(iconSize = iconSizeStandard)
+                // 1. CABEÇALHO PARTILHADO
+                FulgoraTopBar(
+                    title = "Hi, Alex!",
+                    subtitle = "Ready to ride?",
+                    iconSize = iconSize
+                )
 
-                Spacer(modifier = Modifier.height(verticalPadding))
+                Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge)) // Espaço dinâmico se quiseres, ou fixo 32dp
 
                 // 2. TÍTULO
                 Text(
                     text = "Battery Info",
                     textAlign = TextAlign.Start,
                     color = Color.White,
-                    fontSize = 28.sp,
+                    fontSize = Dimens.TextSizeHeader, // 28.sp
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge))
 
-                // 3. A BATERIA GRANDE E INFO (Lado a Lado Sincronizados)
+                // 3. BATERIA GRANDE + INFO
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(IntrinsicSize.Min), // ⚠️ Força a Bateria a ter a mesma altura do Cartão
+                        .height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Ícone da Bateria Grande
                     BigBatteryIndicator(
                         modifier = Modifier
-                            .weight(0.35f)   // Ocupa 35% da largura
-                            .fillMaxHeight() // Estica para acompanhar a altura do texto
+                            .weight(0.35f)
+                            .fillMaxHeight()
                     )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(Dimens.PaddingMedium))
 
-                    // O Cartão de Texto (que define a altura)
+                    // O Cartão de Texto
                     Box(modifier = Modifier.weight(0.65f)) {
                         BatteryInfoCard()
                     }
                 }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(48.dp)) // Este podes manter fixo ou criar Dimens.SpacingSection
 
-                // 4. A GRELHA DE ESTATÍSTICAS
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                // 4. GRELHA DE ESTATÍSTICAS
+                Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium)) {
                     // Linha 1
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium)
+                    ) {
                         BatteryStatCard(
                             icon = Icons.Rounded.Favorite,
                             title = "Battery health",
@@ -113,7 +118,10 @@ fun BatteryScreen() {
                         )
                     }
                     // Linha 2
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium)
+                    ) {
                         BatteryStatCard(
                             icon = Icons.Rounded.Bolt,
                             title = "Avg. consumption",
@@ -129,48 +137,27 @@ fun BatteryScreen() {
                     }
                 }
 
-                // 5. MARGEM DE SEGURANÇA FINAL
-                // Garante que o último conteúdo fica acima da navbar quando fazes scroll total
-                Spacer(modifier = Modifier.height(100.dp))
+                // 5. MARGEM FINAL SCROLL
+                Spacer(modifier = Modifier.height(Dimens.ScrollBottomPadding))
             }
         }
     }
 }
 
-// --- COMPONENTES AUXILIARES ---
-
-@Composable
-fun BatteryScreenHeader(iconSize: Dp) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(text = "Hi, Alex!", color = Color.Gray, fontSize = 14.sp)
-            Text(text = "Ready to ride?", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        }
-        Row {
-            Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White, modifier = Modifier.size(iconSize))
-            Spacer(modifier = Modifier.width(16.dp))
-            Icon(Icons.Default.Menu, contentDescription = null, tint = Color.White, modifier = Modifier.size(iconSize))
-        }
-    }
-}
+// --- COMPONENTES AUXILIARES (Refatorados) ---
 
 @Composable
 fun BigBatteryIndicator(modifier: Modifier = Modifier) {
-    // Contentor da imagem/ícone grande
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            painter = painterResource(id = AppIcons.Battery.BigBatteryCharging), // Verifica se o ID está correto no teu AppIcons
+            painter = painterResource(id = AppIcons.Battery.BigBatteryCharging),
             contentDescription = "Battery Status",
             tint = GreenFresh,
             modifier = Modifier
-                .fillMaxSize() // Ocupa o espaço que o 'weight' lhe der
+                .fillMaxSize()
                 .scale(1.3f)
         )
     }
@@ -180,52 +167,50 @@ fun BigBatteryIndicator(modifier: Modifier = Modifier) {
 fun BatteryInfoCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(12.dp), // Podes por isto no Dimens.CardCornerRadius se quiseres
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E1E1E)
+            containerColor = CardBackgroundColor // Usando a cor centralizada
         )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(Dimens.SpacingSmall) // 12.dp aprox
         ) {
-            // --- PARTE DE CIMA (Texto) ---
-            // Adicionei este Column com padding para alinhar com o ícone de baixo
+            // Topo
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp) // 👈 O empurrãozinho para a direita (IGUAL AO DE BAIXO)
+                    .padding(start = Dimens.PaddingMedium)
             ) {
                 Text(text = "Charging", color = GreenFresh, fontWeight = FontWeight.Bold)
 
                 Text(
                     text = "Time left",
                     color = Color.Gray,
-                    fontSize = 12.sp
+                    fontSize = Dimens.TextSizeSmall
                 )
 
                 Text(
                     text = "03h 7m",
                     color = Color.White,
-                    fontSize = 32.sp,
+                    fontSize = 32.sp, // Este é muito específico, podes deixar fixo ou criar Dimens.TextSizeHuge
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Dimens.SpacingSmall))
 
-            // --- A LINHA DOS 3 ÍCONES ---
+            // Linha de Ícones
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // --- ITEM 1: ESQUERDA (Agora alinhado com o texto) ---
+                // Item 1
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(1f)
-                        // 👇 MUDANÇA CRÍTICA:
-                        .padding(start = 16.dp), // 1. Mesmo padding do texto de cima
-                    horizontalAlignment = Alignment.Start, // 2. Alinhado à esquerda (Start)
+                        .padding(start = Dimens.PaddingMedium),
+                    horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
@@ -235,14 +220,12 @@ fun BatteryInfoCard() {
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("78%", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                    Text("78%", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
                 }
 
-                // --- ITEM 2: CENTRO (Mantém-se igual) ---
+                // Item 2 (Centro)
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -253,15 +236,13 @@ fun BatteryInfoCard() {
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("92 km", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                    Text("92 km", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
                 }
 
-                // --- ITEM 3: DIREITA (Mantém-se igual ou End) ---
+                // Item 3 (Direita)
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally, // Podes mudar para Alignment.End se preferires encostado
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
@@ -271,7 +252,7 @@ fun BatteryInfoCard() {
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("Charging", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                    Text("Charging", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
                 }
             }
         }
@@ -287,8 +268,8 @@ fun BatteryStatCard(
 ) {
     Column(
         modifier = modifier
-            .background(Color(0xFF1E1E1E), RoundedCornerShape(16.dp))
-            .padding(16.dp)
+            .background(CardBackgroundColor, RoundedCornerShape(16.dp))
+            .padding(Dimens.PaddingMedium)
     ) {
         Icon(
             imageVector = icon,
@@ -296,8 +277,8 @@ fun BatteryStatCard(
             tint = GreenFresh,
             modifier = Modifier.size(24.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
         Text(text = value, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        Text(text = title, color = Color.Gray, fontSize = 12.sp)
+        Text(text = title, color = Color.Gray, fontSize = Dimens.TextSizeSmall)
     }
 }

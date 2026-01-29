@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myfulgora.R
 import com.example.myfulgora.ui.components.FulgoraBackground
+import com.example.myfulgora.ui.components.FulgoraTopBar
 import com.example.myfulgora.ui.theme.GreenFresh
 
 @Composable
@@ -54,19 +55,21 @@ fun HomeScreen() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = horizontalPadding)
-                    .padding(top = verticalPadding, bottom = verticalPadding),
+                    .padding(bottom = verticalPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 // 1. HEADER (Passamos o tamanho do ícone)
-                HomeHeader(iconSize = iconSizeStandard)
-
+                FulgoraTopBar(
+                    title = "Hi, Alex!",
+                    subtitle = "Ready to ride?"
+                )
                 Spacer(modifier = Modifier.height(verticalPadding))
 
                 // 2. NOME DA MOTA E BATERIA
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "Bike Name",
+                        text = "VIM: 4Y1SL65848Z411439",
                         color = Color.White,
                         // Fonte escala com a largura do ecrã
                         fontSize = getResponsiveTextSize(screenW, 28f),

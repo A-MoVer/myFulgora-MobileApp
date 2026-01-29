@@ -6,7 +6,7 @@ import com.example.myfulgora.R
 object AppIcons {
 
     // Grupo: Navegação (Barra de Baixo)
-    object Nav {
+    object Navbar {
         val Map = R.drawable.bottom_navigation_map
         val Battery = R.drawable.bottom_navigation_battery
         val Home = R.drawable.bottom_navigation_home

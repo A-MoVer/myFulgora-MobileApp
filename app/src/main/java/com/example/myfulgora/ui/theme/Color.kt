@@ -13,3 +13,4 @@ val GrayDark = Color(0xFF1E293B)     // Usado nos nossos fundos atuais
 val GrayLight = Color(0xFFB0BEC5)
 val RedError = Color(0xFFFF5252)
 val DarkInputBackground = Color(0xFF222222)
+val CardBackgroundColor = Color(0xFF1E1E1E)
