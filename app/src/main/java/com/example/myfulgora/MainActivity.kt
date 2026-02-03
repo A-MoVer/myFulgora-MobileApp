@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 // DICA: Para testares rápido, muda "splash" para "login" temporariamente
-                NavHost(navController = navController, startDestination = "home") {
+                NavHost(navController = navController, startDestination = "splash") {
 
                     // 1. Splash
                     composable("splash") {

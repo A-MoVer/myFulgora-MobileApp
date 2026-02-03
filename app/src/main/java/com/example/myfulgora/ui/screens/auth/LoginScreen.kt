@@ -22,6 +22,8 @@ import com.example.myfulgora.ui.theme.AppIcons
 import com.example.myfulgora.ui.theme.GreenFresh
 import com.example.myfulgora.ui.viewmodel.LoginState
 import com.example.myfulgora.ui.viewmodel.LoginViewModel
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun LoginScreen(
@@ -119,6 +121,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
+                    .clip(RoundedCornerShape(32.dp))
                     .clickable(enabled = state !is LoginState.Loading) {
                         viewModel.fazerLogin()
                     },

@@ -2,6 +2,7 @@ package com.example.myfulgora.ui.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,13 +23,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myfulgora.R
 import com.example.myfulgora.ui.components.FulgoraBackground
+import com.example.myfulgora.ui.theme.AppIcons
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 // Modelo de dados de cada página
 data class OnboardingPage(
     val title: String,
     val description: String,
-    val imageRes: Int
+    val imageRes: Int,
+    val imageScale: Float
 )
 
 @Composable
@@ -35,24 +40,22 @@ fun OnboardingScreen(onFinish: () -> Unit) {
 
     val pages = listOf(
         OnboardingPage(
+            "Go green,\nRide Confidently",
+            "Know your ride at a glance. Track battery, range, and key bike stats in real time so you always ride with confidence.",
+            R.drawable.img_onboarding_1,
+            imageScale = 0.9f
+        ),
+        OnboardingPage(
             "All Bikes,\nOne App",
-            "Manage all your electric bikes in one place.",
-            R.drawable.img_onboarding_2
+            "Keep all your bikes connected in one place. Check status, battery, and location, anytime, anywhere.",
+            R.drawable.img_onboarding_2,
+            imageScale = 1.25f
         ),
         OnboardingPage(
-            "Ride Safe,\nRide Smart",
-            "Track battery, range, and bike status in a smart dashboard for safer rides.",
-            R.drawable.img_onboarding_2
-        ),
-        OnboardingPage(
-            "Drive Green,\nEarn Rewards",
-            "Ride sustainably, earn E-Points, and redeem them for real rewards. The more efficient you ride, the more you earn.",
-            R.drawable.img_onboarding_1
-        ),
-        OnboardingPage(
-            "Join the\nCommunity",
-            "Share routes, achievements, and improvements. Compete with friends and climb the green community rankings.",
-            R.drawable.img_onboarding_3
+            "Join the \nCommunity",
+            "Join a community built around smarter mobility. Track progress, take on challenges, and share achievements with others.",
+            R.drawable.img_onboarding_3,
+            imageScale = 1.1f
         )
     )
 
@@ -71,15 +74,6 @@ fun OnboardingScreen(onFinish: () -> Unit) {
             // --- TOPO: LOGO ---
             // Adicionei um Spacer para dar "ar" no topo como no mockup
             Spacer(modifier = Modifier.height(20.dp))
-
-//            Image(
-//                painter = painterResource(R.drawable.logo_app),
-//                contentDescription = "Logo",
-//                modifier = Modifier
-//                    .width(280.dp)
-//                    .aspectRatio(160f / 50f), // mantém proporção original
-//                contentScale = ContentScale.Fit
-//            )
 
             // --- CENTRO: CARROSSEL (PAGER) ---
             // O weight(1f) empurra o topo para cima e o rodapé para baixo, ocupando o meio
@@ -102,7 +96,6 @@ fun OnboardingScreen(onFinish: () -> Unit) {
             ) {
 
                 // INDICATORS (Bolinhas)
-                // INDICATORS (Bolinhas mais subtis)
                 Row(
                     modifier = Modifier.padding(bottom = 12.dp),
                     horizontalArrangement = Arrangement.Center,
@@ -118,7 +111,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                                 .clip(CircleShape)
                                 .background(
                                     if (isSelected)
-                                        Color(0xFF00D84F) // Verde vivo na selecionada
+                                        Color(0xFFFFFFFF) // Cor das bolinhas
                                     else
                                         Color.White.copy(alpha = 0.2f) // 2. TRANSPARÊNCIA: Cinzento muito subtil nas outras
                                 )
@@ -128,18 +121,29 @@ fun OnboardingScreen(onFinish: () -> Unit) {
 
                 // BOTÃO ou TEXTO NEXT
                 if (pagerState.currentPage == pages.lastIndex) {
-                    Button(
-                        onClick = onFinish,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF00D84F) // Verde Fresh
-                        ),
+                    Box(
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .height(64.dp) // Ajusta a altura conforme a tua imagem
+                            // 👇 CORREÇÃO RIPPLE: Recorta a área de clique para ficar redonda
+                            // Se o botão for totalmente redondo nas pontas, usa 32.dp (metade da altura)
+                            .clip(RoundedCornerShape(32.dp))
+                            .clickable(onClick = onFinish)
                     ) {
+                        // 1. A IMAGEM DE FUNDO
+                        Image(
+                            painter = painterResource(id = R.drawable.button), // O teu png do botão
+                            contentDescription = null,
+                            contentScale = ContentScale.FillBounds, // Estica a imagem para encher o botão
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        // 2. O TEXTO POR CIMA
                         Text(
-                            "Get Started",
+                            text = "Get Started",
                             fontSize = 18.sp,
+                            // Escolhe a cor que contraste com o teu botão (Branco ou Preto?)
                             color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
@@ -168,59 +172,61 @@ fun OnboardingScreen(onFinish: () -> Unit) {
 
 @Composable
 fun OnboardingPageContent(page: OnboardingPage) {
-    BoxWithConstraints(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = 48.dp), // Mantém o texto apertadinho nas laterais
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val availableHeight = maxHeight
 
-        val titleFontSize = (availableHeight.value * 0.045f)
-            .coerceIn(22f, 30f)
-            .sp
-
-        val descriptionFontSize = (availableHeight.value * 0.022f)
-            .coerceIn(13f, 17f)
-            .sp
-
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        // --- GAVETA 1: ÁREA DA IMAGEM (50% do ecrã) ---
+        Box(
+            modifier = Modifier
+                .weight(0.5f) // Ocupa metade da altura disponível
+                .fillMaxWidth(),
+            contentAlignment = Alignment.BottomCenter // Cola a imagem ao fundo desta área
         ) {
-
-            Spacer(modifier = Modifier.height(availableHeight * 0.08f))
-
             Image(
                 painter = painterResource(page.imageRes),
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .height(availableHeight * 0.35f),
-                contentScale = ContentScale.Fit
+                    .size(120.dp) // Tamanho fixo para a imagem
+                    .graphicsLayer {
+                        scaleX = page.imageScale
+                        scaleY = page.imageScale
+                    },
+                contentScale = ContentScale.Fit // Garante que a imagem não é cortada
             )
+        }
 
-            Spacer(modifier = Modifier.height(availableHeight * 0.04f))
+        // Espaço fixo entre a área da imagem e o título
+        Spacer(modifier = Modifier.height(32.dp))
 
+        // --- GAVETA 2: ÁREA DO TEXTO (Resto do ecrã) ---
+        Column(
+            modifier = Modifier
+                .weight(0.5f) // Ocupa a outra metade
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = page.title,
                 color = Color.White,
-                fontSize = titleFontSize,
+                fontSize = 24.sp, // Tamanho fixo e legível
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                lineHeight = (titleFontSize.value * 1.25f).sp
+                lineHeight = 32.sp
             )
 
-            Spacer(modifier = Modifier.height(availableHeight * 0.02f))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = page.description,
                 color = Color(0xFFB0BEC5),
-                fontSize = descriptionFontSize,
+                fontSize = 18.sp,
                 textAlign = TextAlign.Center,
-                lineHeight = (descriptionFontSize.value * 1.4f).sp
+                lineHeight = 20.sp
             )
-
-            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
