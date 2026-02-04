@@ -41,6 +41,14 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/io.netty.versions.properties" // Adiciona este também, costuma dar erro a seguir
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
@@ -76,6 +84,11 @@ dependencies {
     // Google Maps para Compose
     implementation("com.google.maps.android:maps-compose:4.3.3")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+    // Cliente MQTT da HiveMQ (Versão 3 é a mais estável para Android/Kotlin)
+    implementation("com.hivemq:hivemq-mqtt-client:1.3.3")
+    // Para converter JSON (vamos precisar quando recebermos dados complexos)
+    implementation("com.google.code.gson:gson:2.10.1")
 }
 
 protobuf {

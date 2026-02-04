@@ -25,6 +25,10 @@ import com.example.myfulgora.ui.theme.BlackBrand
 import com.example.myfulgora.ui.theme.GreenFresh
 import androidx.compose.ui.platform.LocalLayoutDirection // 👈 NOVO
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myfulgora.data.model.BikeState
+import com.example.myfulgora.ui.viewmodel.HomeUiState
+import com.example.myfulgora.ui.viewmodel.MotaViewModel
 
 // Classe auxiliar para organizar os itens do menu
 data class DrawerItemData(
@@ -35,6 +39,8 @@ data class DrawerItemData(
 
 @Composable
 fun MainScreen() {
+    val viewModel: MotaViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -51,6 +57,13 @@ fun MainScreen() {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    // Preparar o estado para passar à Home
+    // Se for Loading, passamos um estado vazio. Se for Success, passamos os dados reais.
+    val currentBikeState = when(val state = uiState) {
+        is HomeUiState.Success -> state.bikeState
+        else -> BikeState() // Estado vazio/zeros enquanto carrega
+    }
 
     // 1. O TRUQUE: Mudar a direção do layout "Mestre" para RTL (Direita para Esquerda)
     // Isto faz com que o Drawer "pense" que o início do ecrã é à direita.
@@ -186,7 +199,9 @@ fun MainScreen() {
                             BatteryScreen(onMenuClick = { scope.launch { drawerState.open() } })
                         }
                         composable("home") {
-                            HomeScreen(onMenuClick = { scope.launch { drawerState.open() } })
+                            HomeScreen(
+                                state = currentBikeState,
+                                onMenuClick = { scope.launch { drawerState.open() } })
                         }
                         composable("social") {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Social", color = Color.White) }

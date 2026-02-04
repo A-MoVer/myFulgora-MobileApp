@@ -46,9 +46,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import com.example.myfulgora.data.model.BikeState
 
 @Composable
 fun HomeScreen(
+    state: BikeState,
     onMenuClick: () -> Unit = {}
 ) {
     // Estado para simular o bloqueio/desbloqueio (como no mockup)
@@ -101,7 +103,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (isLocked) "77%" else "1hr 10m 4s remaining",
+                            text = if (isLocked) "${state.batteryPercentage}%" else "1hr 10m 4s remaining",
                             color = Color.White,
                             fontSize = 14.sp
                         )
@@ -150,11 +152,12 @@ fun HomeScreen(
                                 useCenter = false,
                                 style = Stroke(width = strokeWidth.toPx())
                             )
+                            val sweep = (state.batteryPercentage * 360f) / 100f
                             // Progresso (Verde)
                             drawArc(
                                 color = GreenFresh,
                                 startAngle = -90f,
-                                sweepAngle = 280f, // 78% simulado
+                                sweepAngle = sweep, // 78% simulado
                                 useCenter = false,
                                 style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
                             )
@@ -329,10 +332,35 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        HomeStatItem(painterResource(id = AppIcons.Dashboard.Battery), "75%", "")
-                        HomeStatItem(painterResource(id = AppIcons.Dashboard.Power), "3,72", "kW/100")
-                        HomeStatItem(painterResource(id = AppIcons.Dashboard.Bike), "245", "km")
-                        HomeStatItem(painterResource(id = AppIcons.Dashboard.Status), "Offline", "")
+                        // 👇 ALTERAR ESTAS LINHAS:
+
+                        // 1. Bateria
+                        HomeStatItem(
+                            painterResource(id = AppIcons.Dashboard.Battery),
+                            "${state.batteryPercentage}%", // Valor dinâmico
+                            ""
+                        )
+
+                        // 2. Consumo (Podes manter estático ou simular depois)
+                        HomeStatItem(
+                            painterResource(id = AppIcons.Dashboard.Power),
+                            "3,72",
+                            "kW/100"
+                        )
+
+                        // 3. Autonomia (Range)
+                        HomeStatItem(
+                            painterResource(id = AppIcons.Dashboard.Bike),
+                            "${state.range}", // Valor dinâmico
+                            "km"
+                        )
+
+                        // 4. Status (Podes ligar ao isLocked)
+                        HomeStatItem(
+                            painterResource(id = AppIcons.Dashboard.Status),
+                            if (state.isLocked) "Locked" else "Ready", // Valor dinâmico
+                            ""
+                        )
                     }
                 }
 
