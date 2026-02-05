@@ -13,6 +13,10 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -30,6 +34,11 @@ import com.example.myfulgora.ui.theme.AppIcons
 import com.example.myfulgora.ui.theme.CardBackgroundColor
 import com.example.myfulgora.ui.theme.Dimens
 import com.example.myfulgora.ui.theme.GreenFresh
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
+// 👇 E este para o 'delay' funcionar
+import kotlinx.coroutines.delay
 
 @Composable
 fun BatteryScreen(
@@ -146,34 +155,62 @@ fun BatteryScreen(
 
 @Composable
 fun BigBatteryIndicator(
-    state: BikeState = BikeState(),
-    modifier: Modifier = Modifier) {
+    state: BikeState,
+    modifier: Modifier = Modifier
+) {
+    // 1. ESTADO DA ANIMAÇÃO
+    // Controla qual imagem mostramos: True = Imagem 1, False = Imagem 2
+    var showFrame1 by remember { mutableStateOf(true) }
+
+    // 2. O MOTOR DA ANIMAÇÃO
+    LaunchedEffect(state.isCharging) {
+        if (state.isCharging) {
+            // Se estiver a carregar, entra num loop infinito
+            while (true) {
+                delay(800) // Tempo de espera (800ms). Ajusta se quiseres mais rápido/lento.
+                showFrame1 = !showFrame1 // Troca a imagem
+            }
+        } else {
+            // Se parar de carregar, reseta para a imagem principal
+            showFrame1 = true
+        }
+    }
+
+    // 3. LÓGICA DE ESCOLHA DA IMAGEM E COR
+    val currentIcon = if (state.isCharging) {
+        // MODO A CARREGAR: Alterna entre as duas imagens
+        if (showFrame1) {
+            AppIcons.Battery.BigBatteryCharging // Imagem A (Ex: Cheia)
+        } else {
+            // ⚠️ ATENÇÃO: Coloca aqui a tua segunda imagem (Ex: Vazia ou Sem Raio)
+            AppIcons.Battery.BigBattery
+        }
+    } else {
+        // MODO NORMAL: Imagem estática
+        AppIcons.Battery.BigBatteryCharging
+    }
 
     val mainColor = if (state.isCharging) Color(0xFFFFD700) else GreenFresh
 
-    Column( // 👈 Mudámos de Box para Column para ficar um em baixo do outro
-        modifier = modifier, // Recebe o weight(0.35f) e fillMaxHeight() do pai
-        horizontalAlignment = Alignment.CenterHorizontally, // Centra horizontalmente
-        //verticalArrangement = Arrangement.Center // Centra verticalmente
-
+    // 4. O UI (Quase igual ao anterior, mas usa o currentIcon)
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.weight(1.2f))
-        // 1. ÍCONE DA BATERIA
+
+        // Ícone Dinâmico
         Icon(
-            painter = painterResource(
-                id = if (state.isCharging) AppIcons.Battery.BigBatteryCharging else AppIcons.Battery.BigBatteryCharging // Se tiveres um icone "Full" ou normal, troca aqui o segundo
-            ),
+            painter = painterResource(id = currentIcon), // 👈 Usa a variável dinâmica
             contentDescription = "Battery Status",
-            tint = mainColor, // 👈 COR DINÂMICA
+            tint = mainColor,
             modifier = Modifier
                 .size(100.dp)
                 .scale(1.5f)
         )
 
-        // Espaço entre o ícone e o texto
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 2. TEXTO DA PERCENTAGEM
         Text(
             text = "${state.batteryPercentage}%",
             color = Color.White,
@@ -217,7 +254,7 @@ fun BatteryInfoCard(
                 )
 
                 Text(
-                    text = if (state.isCharging) "Calculating..." else "-- h -- m",
+                    text = if (state.isCharging) state.timeLeft else "-- h -- m",
                     color = Color.White,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold

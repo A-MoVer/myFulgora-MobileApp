@@ -20,5 +20,6 @@ data class BikeState(
     //BaterryScreen
     val batteryHealth: String = "Good", // Ex: Good, Fair, Bad
     val batteryCycles: Int = 0,
-    val batteryTemp: Int = 0 // Em graus Celsius
+    val batteryTemp: Int = 0, // Em graus Celsius
+    val timeLeft: String = "0h 00m"
 )

@@ -17,12 +17,12 @@ object FulgoraMqttClient {
     private const val TAG = "FulgoraMqtt"
 
     // Configurações do Broker (Para testar em casa usamos o público da HiveMQ)
-    private const val BROKER_HOST = "broker.hivemq.com"
-    private const val BROKER_PORT = 1883
+    //private const val BROKER_HOST = "broker.hivemq.com"
+    //private const val BROKER_PORT = 1883
 
     //CSVU
-    //private const val BROKER_HOST = "172.20.0.203"
-    //private const val BROKER_PORT = 1884
+    private const val BROKER_HOST = "172.20.0.203"
+    private const val BROKER_PORT = 1884
 
     // O Cliente MQTT real
     private var client: Mqtt3AsyncClient? = null
@@ -80,6 +80,7 @@ object FulgoraMqttClient {
             "moto/cycles",
             "moto/temperature",
             "moto/health",
+            "moto/timeleft",
             )
 
         topics.forEach { topic ->
@@ -107,7 +108,7 @@ object FulgoraMqttClient {
                     "moto/battery" -> currentState.copy(batteryPercentage = payload.toIntOrNull() ?: 0)
                     "moto/range" -> currentState.copy(range = payload.toIntOrNull() ?: 0)
                     "moto/status" -> currentState.copy(isOnline = payload.toBoolean())
-                    //"moto/charging" -> currentState.copy(isCharging = payload == "true")
+                    "moto/charging" -> currentState.copy(isCharging = payload == "true")
                     "moto/cycles" -> currentState.copy(batteryCycles = payload.toIntOrNull() ?: 0)
                     "moto/temperature" -> currentState.copy(batteryTemp = payload.toIntOrNull() ?: 0)
                     "moto/health" -> currentState.copy(batteryHealth = payload)
