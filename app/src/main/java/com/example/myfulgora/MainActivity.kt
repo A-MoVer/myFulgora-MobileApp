@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
             MyFulgoraTheme {
                 val navController = rememberNavController()
 
-                // DICA: Para testares rápido, muda "splash" para "login" temporariamente
                 NavHost(navController = navController, startDestination = "home") {
 
                     // 1. Splash

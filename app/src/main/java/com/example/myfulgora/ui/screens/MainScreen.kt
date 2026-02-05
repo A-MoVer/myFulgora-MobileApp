@@ -196,7 +196,9 @@ fun MainScreen() {
                             ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
                         }
                         composable("battery") {
-                            BatteryScreen(onMenuClick = { scope.launch { drawerState.open() } })
+                            BatteryScreen(
+                                state = currentBikeState,
+                                onMenuClick = { scope.launch { drawerState.open() } })
                         }
                         composable("home") {
                             HomeScreen(

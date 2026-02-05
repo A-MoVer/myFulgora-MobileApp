@@ -338,7 +338,7 @@ fun HomeScreen(
                         HomeStatItem(
                             painterResource(id = AppIcons.Dashboard.Battery),
                             "${state.batteryPercentage}%", // Valor dinâmico
-                            ""
+                            "",
                         )
 
                         // 2. Consumo (Podes manter estático ou simular depois)

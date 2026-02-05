@@ -20,6 +20,10 @@ object FulgoraMqttClient {
     private const val BROKER_HOST = "broker.hivemq.com"
     private const val BROKER_PORT = 1883
 
+    //CSVU
+    //private const val BROKER_HOST = "172.20.0.203"
+    //private const val BROKER_PORT = 1884
+
     // O Cliente MQTT real
     private var client: Mqtt3AsyncClient? = null
 
@@ -28,27 +32,40 @@ object FulgoraMqttClient {
     val bikeState: StateFlow<BikeState> = _bikeState.asStateFlow()
 
     fun connect() {
+        // Se já estiver ligado ou a ligar, não faz nada
         if (client != null && client!!.state.isConnected) return
 
-        Log.d(TAG, "A tentar conectar ao broker $BROKER_HOST...")
+        Log.d(TAG, "A configurar cliente MQTT...")
 
         client = MqttClient.builder()
             .useMqttVersion3()
             .identifier("android-app-${UUID.randomUUID()}")
             .serverHost(BROKER_HOST)
             .serverPort(BROKER_PORT)
+
+            // 👇 1. RECONEXÃO AUTOMÁTICA
+            // Se a net falhar, ele tenta reconectar sozinho indefinidamente
+            .automaticReconnectWithDefaultConfig()
+
+            // 👇 2. LISTENER: QUANDO CONECTA
+            .addConnectedListener {
+                Log.i(TAG, "✅ CONECTADO AO BROKER!")
+                // Atualiza o estado para ONLINE (Verde)
+                _bikeState.update { it.copy(isOnline = true) }
+                // Volta a subscrever os tópicos (por segurança)
+                subscribeToTopics()
+            }
+
+            // 👇 3. LISTENER: QUANDO DESCONECTA
+            .addDisconnectedListener {
+                Log.w(TAG, "❌ DESCONECTADO DO BROKER!")
+                // Atualiza o estado para OFFLINE (Vermelho)
+                _bikeState.update { it.copy(isOnline = false) }
+            }
             .buildAsync()
 
-        client?.connectWith()
-            ?.send()
-            ?.whenComplete { _, throwable ->
-                if (throwable != null) {
-                    Log.e(TAG, "Erro ao conectar: ${throwable.message}")
-                } else {
-                    Log.i(TAG, "Conectado com sucesso!")
-                    subscribeToTopics()
-                }
-            }
+        // Inicia a conexão
+        client?.connect()
     }
 
     private fun subscribeToTopics() {
@@ -58,7 +75,12 @@ object FulgoraMqttClient {
             "moto/battery",
             "moto/gear",
             "moto/range",
-            "moto/status"        )
+            "moto/status",
+            "moto/charging",
+            "moto/cycles",
+            "moto/temperature",
+            "moto/health",
+            )
 
         topics.forEach { topic ->
             client?.subscribeWith()
@@ -75,7 +97,7 @@ object FulgoraMqttClient {
         val topic = publish.topic.toString()
         val payload = String(publish.payloadAsBytes, StandardCharsets.UTF_8)
 
-        Log.d(TAG, "Recebido [$topic]: $payload")
+        //Log.d(TAG, "Recebido [$topic]: $payload")
 
         // Atualiza o estado da mota com base na mensagem recebida
         _bikeState.update { currentState ->
@@ -85,6 +107,10 @@ object FulgoraMqttClient {
                     "moto/battery" -> currentState.copy(batteryPercentage = payload.toIntOrNull() ?: 0)
                     "moto/range" -> currentState.copy(range = payload.toIntOrNull() ?: 0)
                     "moto/status" -> currentState.copy(isOnline = payload.toBoolean())
+                    //"moto/charging" -> currentState.copy(isCharging = payload == "true")
+                    "moto/cycles" -> currentState.copy(batteryCycles = payload.toIntOrNull() ?: 0)
+                    "moto/temperature" -> currentState.copy(batteryTemp = payload.toIntOrNull() ?: 0)
+                    "moto/health" -> currentState.copy(batteryHealth = payload)
                     else -> currentState
                 }
             } catch (e: Exception) {

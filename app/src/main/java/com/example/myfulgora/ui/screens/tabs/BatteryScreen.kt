@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myfulgora.data.model.BikeState
 import com.example.myfulgora.ui.components.FulgoraBackground
 import com.example.myfulgora.ui.components.FulgoraTopBar
 import com.example.myfulgora.ui.theme.AppIcons
@@ -32,6 +33,7 @@ import com.example.myfulgora.ui.theme.GreenFresh
 
 @Composable
 fun BatteryScreen(
+    state: BikeState,
     onMenuClick: () -> Unit = {}
 ) {
     FulgoraBackground {
@@ -76,23 +78,20 @@ fun BatteryScreen(
 
                 // 3. BATERIA GRANDE + INFO
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
+                    modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Ícone da Bateria Grande
+                    // 👇 Passamos o STATE aqui
                     BigBatteryIndicator(
-                        modifier = Modifier
-                            .weight(0.35f)
-                            .fillMaxHeight()
+                        state = state,
+                        modifier = Modifier.weight(0.35f).fillMaxHeight()
                     )
 
                     Spacer(modifier = Modifier.width(Dimens.PaddingMedium))
 
-                    // O Cartão de Texto
                     Box(modifier = Modifier.weight(0.65f)) {
-                        BatteryInfoCard()
+                        // 👇 Passamos o STATE aqui também
+                        BatteryInfoCard(state = state)
                     }
                 }
 
@@ -108,13 +107,13 @@ fun BatteryScreen(
                         BatteryStatCard(
                             icon = AppIcons.Battery.BatteryHealth,
                             title = "Battery health",
-                            value = "Good",
+                            value = state.batteryHealth,
                             modifier = Modifier.weight(1f)
                         )
                         BatteryStatCard(
                             icon = AppIcons.Battery.BatteryTemperature,
                             title = "Temperature",
-                            value = "32°C",
+                            value = "${state.batteryTemp}°C",
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -132,7 +131,7 @@ fun BatteryScreen(
                         BatteryStatCard(
                             icon = AppIcons.Battery.BatteryChargingCycles,
                             title = "Charging cycles",
-                            value = "124 cycles",
+                            value = "${state.batteryCycles} cycles",
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -146,7 +145,12 @@ fun BatteryScreen(
 }
 
 @Composable
-fun BigBatteryIndicator(modifier: Modifier = Modifier) {
+fun BigBatteryIndicator(
+    state: BikeState = BikeState(),
+    modifier: Modifier = Modifier) {
+
+    val mainColor = if (state.isCharging) Color(0xFFFFD700) else GreenFresh
+
     Column( // 👈 Mudámos de Box para Column para ficar um em baixo do outro
         modifier = modifier, // Recebe o weight(0.35f) e fillMaxHeight() do pai
         horizontalAlignment = Alignment.CenterHorizontally, // Centra horizontalmente
@@ -156,12 +160,12 @@ fun BigBatteryIndicator(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.weight(1.2f))
         // 1. ÍCONE DA BATERIA
         Icon(
-            painter = painterResource(id = AppIcons.Battery.BigBatteryCharging),
+            painter = painterResource(
+                id = if (state.isCharging) AppIcons.Battery.BigBatteryCharging else AppIcons.Battery.BigBatteryCharging // Se tiveres um icone "Full" ou normal, troca aqui o segundo
+            ),
             contentDescription = "Battery Status",
-            tint = GreenFresh,
+            tint = mainColor, // 👈 COR DINÂMICA
             modifier = Modifier
-                // Não uses fillMaxSize aqui senão empurra o texto para fora.
-                // Usa um tamanho fixo ou weight. Vou pôr um tamanho generoso:
                 .size(100.dp)
                 .scale(1.5f)
         )
@@ -171,7 +175,7 @@ fun BigBatteryIndicator(modifier: Modifier = Modifier) {
 
         // 2. TEXTO DA PERCENTAGEM
         Text(
-            text = "78%",
+            text = "${state.batteryPercentage}%",
             color = Color.White,
             fontSize = 26.sp,
             fontWeight = FontWeight.ExtraBold,
@@ -181,7 +185,9 @@ fun BigBatteryIndicator(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BatteryInfoCard() {
+fun BatteryInfoCard(
+    state: BikeState
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -198,7 +204,11 @@ fun BatteryInfoCard() {
                     .fillMaxWidth()
                     .padding(start = Dimens.PaddingMedium)
             ) {
-                Text(text = "Charging", color = GreenFresh, fontWeight = FontWeight.Bold)
+                Text(
+                    text = if (state.isCharging) "Charging" else "Standby", // 👈 Texto Dinâmico
+                    color = if (state.isCharging) GreenFresh else Color.Gray,
+                    fontWeight = FontWeight.Bold
+                )
 
                 Text(
                     text = "Time left",
@@ -207,7 +217,7 @@ fun BatteryInfoCard() {
                 )
 
                 Text(
-                    text = "03h 7m",
+                    text = if (state.isCharging) "Calculating..." else "-- h -- m",
                     color = Color.White,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
@@ -237,7 +247,7 @@ fun BatteryInfoCard() {
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("78%", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
+                    Text("${state.batteryPercentage}%", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
                 }
 
                 // Item 2 (Centro)
@@ -253,7 +263,7 @@ fun BatteryInfoCard() {
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("92 km", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
+                    Text("${state.range} km", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
                 }
 
                 // Item 3 (Direita)
@@ -269,8 +279,7 @@ fun BatteryInfoCard() {
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("Charging", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)
-                }
+                    Text(if(state.isCharging) "On" else "Off", color = Color.Gray, fontSize = Dimens.TextSizeSmall, fontWeight = FontWeight.Medium)                }
             }
         }
     }

@@ -15,5 +15,10 @@ data class BikeState(
     val highBeam: Boolean = false,
 
     // Mensagens de erro/aviso
-    val warningMessage: String? = null
+    val warningMessage: String? = null,
+
+    //BaterryScreen
+    val batteryHealth: String = "Good", // Ex: Good, Fair, Bad
+    val batteryCycles: Int = 0,
+    val batteryTemp: Int = 0 // Em graus Celsius
 )
