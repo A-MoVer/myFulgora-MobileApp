@@ -132,7 +132,7 @@ fun HomeScreen(
                         Icon(
                             painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
                             contentDescription = null,
-                            tint = GreenFresh,
+                            tint = Color.Gray.copy(alpha = 0.5f),
                             modifier = Modifier.size(24.dp)
                         )
                     }

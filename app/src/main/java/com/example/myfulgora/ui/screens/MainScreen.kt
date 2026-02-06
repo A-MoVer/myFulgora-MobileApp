@@ -40,9 +40,9 @@ data class DrawerItemData(
 @Composable
 fun MainScreen() {
     val viewModel: MotaViewModel = viewModel()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val uiState by viewModel.uiState.collectAsState()
     val navController = rememberNavController()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     // Lista de itens (igual ao que tinhas)
@@ -71,7 +71,7 @@ fun MainScreen() {
 
         ModalNavigationDrawer(
             drawerState = drawerState,
-            gesturesEnabled = false,
+            gesturesEnabled = drawerState.isOpen,
             drawerContent = {
                 // 2. CORREÇÃO: Voltamos a pôr o conteúdo do menu em LTR (Normal)
                 // Se não fizéssemos isto, o texto "Alex Rider" ficaria alinhado ao contrário.
@@ -188,27 +188,33 @@ fun MainScreen() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "home",
+                        startDestination = "profile",
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable("map") { MapScreen() }
+                        composable("map") {
+                            MapScreen() }
+
                         composable("profile") {
                             ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
                         }
+
                         composable("battery") {
                             BatteryScreen(
                                 state = currentBikeState,
                                 onMenuClick = { scope.launch { drawerState.open() } })
                         }
+
                         composable("home") {
                             HomeScreen(
                                 state = currentBikeState,
                                 onMenuClick = { scope.launch { drawerState.open() } })
                         }
+
                         composable("social") {
                             SocialScreen(
                                 onMenuClick = { scope.launch { drawerState.open() } })
                         }
+
                         composable("performance") {
                             PerformanceScreen(onMenuClick = { scope.launch { drawerState.open() } })
                         }

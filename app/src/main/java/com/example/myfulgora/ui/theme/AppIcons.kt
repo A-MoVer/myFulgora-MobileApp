@@ -73,4 +73,8 @@ object AppIcons {
         val rewards = R.drawable.social_rewards
     }
 
+    object Profile{
+        val profile = R.drawable.profile_img
+    }
+
 }

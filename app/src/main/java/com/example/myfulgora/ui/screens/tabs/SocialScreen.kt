@@ -6,7 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Stars
 import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.*
@@ -107,7 +106,7 @@ fun SocialScreen(
                             )
                         }
                         Icon(
-                            imageVector = Icons.Rounded.ChevronRight,
+                            painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
                             contentDescription = null,
                             tint = Color.Gray,
                             modifier = Modifier.size(24.dp)
@@ -159,7 +158,7 @@ fun SocialScreen(
                             )
                         }
                         Icon(
-                            imageVector = Icons.Rounded.ChevronRight,
+                            painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
                             contentDescription = null,
                             tint = Color.Gray,
                             modifier = Modifier.size(24.dp)
@@ -203,7 +202,7 @@ fun SocialScreen(
                         ) {
                             Text(text = reward, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                             Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
+                                painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
                                 contentDescription = null,
                                 tint = Color.Gray,
                                 modifier = Modifier.size(20.dp)
@@ -231,7 +230,7 @@ fun SocialScreen(
                             fontWeight = FontWeight.Medium
                         )
                         Icon(
-                            imageVector = Icons.Rounded.ChevronRight,
+                            painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
                             contentDescription = null,
                             tint = Color.Gray,
                             modifier = Modifier.size(24.dp)

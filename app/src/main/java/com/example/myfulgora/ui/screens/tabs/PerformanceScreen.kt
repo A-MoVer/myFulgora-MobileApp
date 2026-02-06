@@ -1,5 +1,6 @@
 package com.example.myfulgora.ui.screens.tabs
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -89,20 +92,45 @@ fun PerformanceScreen(
 
                 // 3. ZONA DA MOTO
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(bikeHeight)
-                        .background(Color.Transparent),
+                    modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.mota_crop),
-                        contentDescription = "Mota",
-                        modifier = Modifier.fillMaxSize(0.85f)
-                    )
-                    Icon(Icons.Rounded.ChevronLeft, contentDescription = null, tint = Color.Gray, modifier = Modifier.align(Alignment.CenterStart).size(iconSizeStandard))
-                    Icon(Icons.Rounded.ChevronRight, contentDescription = null, tint = GreenFresh, modifier = Modifier.align(Alignment.CenterEnd).size(iconSizeStandard))
+                    // Setas de navegação (Mockup)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = AppIcons.Dashboard.ArrowLeft0),
+                            contentDescription = null,
+                            tint = Color.Gray.copy(alpha = 0.5f),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Icon(
+                            painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
+                            contentDescription = null,
+                            tint = Color.Gray.copy(alpha = 0.5f),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    // Mota
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // B. A Mota (Sozinha no meio)
+                        Image(
+                            painter = painterResource(id = AppIcons.Dashboard.MainBike),
+                            contentDescription = "My Bike",
+                            modifier = Modifier
+                                .fillMaxWidth(1f)
+                                .aspectRatio(1.7f)
+                        )
+                    }
                 }
+
 
                 Spacer(modifier = Modifier.height(Dimens.PaddingLarge))
 
@@ -311,7 +339,7 @@ fun RecentTripRow(
         Spacer(modifier = Modifier.width(8.dp))
 
         Icon(
-            imageVector = Icons.Rounded.KeyboardArrowRight,
+            painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
             contentDescription = "Details",
             tint = Color.Gray,
             modifier = Modifier.size(20.dp)
