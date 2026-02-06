@@ -206,7 +206,8 @@ fun MainScreen() {
                                 onMenuClick = { scope.launch { drawerState.open() } })
                         }
                         composable("social") {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Social", color = Color.White) }
+                            SocialScreen(
+                                onMenuClick = { scope.launch { drawerState.open() } })
                         }
                         composable("performance") {
                             PerformanceScreen(onMenuClick = { scope.launch { drawerState.open() } })

@@ -67,4 +67,10 @@ object AppIcons {
         val performance = R.drawable.performance_performance
     }
 
+    object Social{
+        val epoints = R.drawable.social_epoints
+        val top_rider = R.drawable.social_top_rider
+        val rewards = R.drawable.social_rewards
+    }
+
 }
