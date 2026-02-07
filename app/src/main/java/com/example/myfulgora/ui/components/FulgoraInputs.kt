@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -106,5 +108,92 @@ fun FulgoraPasswordField(
                 }
             }
         }
+    )
+}
+
+// 1. INPUT DE TEXTO NORMAL
+@Composable
+fun CustomDarkInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    icon: ImageVector? = null,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Next,
+    onAction: () -> Unit = {}
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label, color = Color.Gray) },
+        leadingIcon = if (icon != null) {
+            { Icon(imageVector = icon, contentDescription = null, tint = GreenFresh) }
+        } else null,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color(0xFF1E1E1E),
+            unfocusedContainerColor = Color(0xFF1E1E1E),
+            cursorColor = GreenFresh,
+            focusedBorderColor = GreenFresh,
+            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+        // 👇 CORREÇÃO AQUI: 'onAny' não existe. Mapeamos as ações mais comuns.
+        keyboardActions = KeyboardActions(
+            onNext = { onAction() },
+            onDone = { onAction() },
+            onGo = { onAction() },
+            onSearch = { onAction() }
+        ),
+        singleLine = true
+    )
+}
+
+// 2. INPUT DE PASSWORD
+@Composable
+fun CustomDarkPasswordInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    imeAction: ImeAction = ImeAction.Done,
+    onAction: () -> Unit = {}
+) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label, color = Color.Gray) },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color(0xFF1E1E1E),
+            unfocusedContainerColor = Color(0xFF1E1E1E),
+            cursorColor = GreenFresh,
+            focusedBorderColor = GreenFresh,
+            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+        ),
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+            val description = if (passwordVisible) "Hide password" else "Show password"
+
+            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                Icon(imageVector = image, contentDescription = description, tint = Color.Gray)
+            }
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = imeAction),
+        // 👇 CORREÇÃO AQUI TAMBÉM
+        keyboardActions = KeyboardActions(
+            onDone = { onAction() },
+            onNext = { onAction() },
+            onGo = { onAction() }
+        ),
+        singleLine = true
     )
 }

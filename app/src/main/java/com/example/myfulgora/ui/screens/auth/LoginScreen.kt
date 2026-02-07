@@ -3,10 +3,12 @@ package com.example.myfulgora.ui.screens.auth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.* // Importante para o remember e mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -15,15 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myfulgora.R
+import com.example.myfulgora.ui.components.FulgoraTextField
+import com.example.myfulgora.ui.components.FulgoraPasswordField
 import com.example.myfulgora.ui.components.FulgoraBackground
-import com.example.myfulgora.ui.components.CustomDarkInput
-import com.example.myfulgora.ui.components.CustomDarkPasswordInput
 import com.example.myfulgora.ui.theme.AppIcons
 import com.example.myfulgora.ui.theme.GreenFresh
 import com.example.myfulgora.ui.viewmodel.LoginState
 import com.example.myfulgora.ui.viewmodel.LoginViewModel
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
 
 @Composable
 fun LoginScreen(
@@ -31,12 +31,16 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onForgotPasswordClick: () -> Unit
 ) {
-    val state by viewModel.loginState.collectAsState()
-    val username by viewModel.username.collectAsState()
-    val password by viewModel.password.collectAsState()
+    // 👇 VOLTAMOS AO BÁSICO: Variáveis locais que funcionam sempre
+    var usernameInput by remember { mutableStateOf("") }
+    var passwordInput by remember { mutableStateOf("") }
 
-    LaunchedEffect(state) {
-        if (state is LoginState.Success) {
+    // O Estado do login (Loading, Erro, Sucesso) continua a vir do ViewModel
+    val loginState by viewModel.loginState.collectAsState()
+
+    // Se o login for sucesso, navega
+    LaunchedEffect(loginState) {
+        if (loginState is LoginState.Success) {
             onLoginSuccess()
         }
     }
@@ -51,15 +55,14 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
 
-            // 1. LOGÓTIPO E TEXTO (Como tinhas antes)
+            // 1. LOGÓTIPO
             Image(
                 painter = painterResource(id = R.drawable.logo_app),
                 contentDescription = "Logo",
-                modifier = Modifier.width(120.dp), // Voltou ao tamanho original
+                modifier = Modifier.width(120.dp),
                 contentScale = ContentScale.Fit
             )
 
-            // Espaço opcional, se quiseres afastar o texto da imagem
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
@@ -70,10 +73,10 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // 2. INPUTS (Estilo Novo)
-            CustomDarkInput(
-                text = username,
-                onTextChange = { viewModel.username.value = it },
+            // 2. INPUT USERNAME (Agora com variáveis locais)
+            FulgoraTextField(
+                text = usernameInput,
+                onTextChange = { usernameInput = it }, // 👈 Isto garante que consegues escrever!
                 placeholder = "Username",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,16 +85,17 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CustomDarkPasswordInput(
-                text = password,
-                onTextChange = { viewModel.password.value = it },
+            // 3. INPUT PASSWORD
+            FulgoraPasswordField(
+                text = passwordInput,
+                onTextChange = { passwordInput = it }, // 👈 Isto garante que consegues escrever!
                 placeholder = "Password",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             )
 
-            // 3. LINK FORGOT PASSWORD
+            // 4. ESQUECI A PASSWORD
             Spacer(modifier = Modifier.height(12.dp))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Text(
@@ -106,24 +110,25 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // ERRO
-            if (state is LoginState.Error) {
+            // MENSAGEM DE ERRO (Se houver)
+            if (loginState is LoginState.Error) {
                 Text(
-                    text = (state as LoginState.Error).message,
+                    text = (loginState as LoginState.Error).message,
                     color = Color(0xFFFF5252),
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
 
-            // 4. BOTÃO LOG IN (Estilo Novo com Imagem)
+            // 5. BOTÃO DE LOGIN
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
                     .clip(RoundedCornerShape(32.dp))
-                    .clickable(enabled = state !is LoginState.Loading) {
-                        viewModel.fazerLogin()
+                    .clickable(enabled = loginState !is LoginState.Loading) {
+                        // 👇 Enviamos o texto local para o ViewModel fazer o trabalho
+                        viewModel.fazerLogin(usernameInput, passwordInput)
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -134,12 +139,8 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                if (state is LoginState.Loading) {
-                    CircularProgressIndicator(
-                        color = Color.White,
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp
-                    )
+                if (loginState is LoginState.Loading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
                     Text(
                         text = "Login",
