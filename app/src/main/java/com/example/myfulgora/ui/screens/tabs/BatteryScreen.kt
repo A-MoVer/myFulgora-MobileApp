@@ -36,6 +36,8 @@ import com.example.myfulgora.ui.theme.Dimens
 import com.example.myfulgora.ui.theme.GreenFresh
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import com.example.myfulgora.R
 
 // 👇 E este para o 'delay' funcionar
 import kotlinx.coroutines.delay
@@ -75,7 +77,7 @@ fun BatteryScreen(
 
                 // 2. TÍTULO
                 Text(
-                    text = "Battery Info",
+                    text = stringResource(id = R.string.battery_title),
                     textAlign = TextAlign.Start,
                     color = Color.White,
                     fontSize = Dimens.TextSizeHeader,
@@ -115,13 +117,13 @@ fun BatteryScreen(
                     ) {
                         BatteryStatCard(
                             icon = AppIcons.Battery.BatteryHealth,
-                            title = "Battery health",
+                            title = stringResource(id = R.string.battery_health),
                             value = state.batteryHealth,
                             modifier = Modifier.weight(1f)
                         )
                         BatteryStatCard(
                             icon = AppIcons.Battery.BatteryTemperature,
-                            title = "Temperature",
+                            title = stringResource(id = R.string.battery_temperature),
                             value = "${state.batteryTemp}°C",
                             modifier = Modifier.weight(1f)
                         )
@@ -133,13 +135,13 @@ fun BatteryScreen(
                     ) {
                         BatteryStatCard(
                             icon = AppIcons.Battery.BatteryConsumption,
-                            title = "Avg. consumption",
+                            title = stringResource(id = R.string.battery_consumption),
                             value = "45 Wh/km",
                             modifier = Modifier.weight(1f)
                         )
                         BatteryStatCard(
                             icon = AppIcons.Battery.BatteryChargingCycles,
-                            title = "Charging cycles",
+                            title = stringResource(id = R.string.battery_charging_cycles),
                             value = "${state.batteryCycles} cycles",
                             modifier = Modifier.weight(1f)
                         )
@@ -248,7 +250,7 @@ fun BatteryInfoCard(
                 )
 
                 Text(
-                    text = "Time left",
+                    text = stringResource(id = R.string.time_left),
                     color = Color.Gray,
                     fontSize = Dimens.TextSizeSmall
                 )

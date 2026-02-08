@@ -23,6 +23,10 @@ import com.example.myfulgora.ui.components.FulgoraTopBar
 import com.example.myfulgora.ui.theme.AppIcons
 import com.example.myfulgora.ui.theme.Dimens
 import com.example.myfulgora.ui.theme.GreenFresh
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 
 @Composable
 fun SettingsScreen(
@@ -179,36 +183,39 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
 
-                // 7. STYLES (Optional cleanup of placeholder code)
+                // 7. STYLES
                 FulgoraInfoCard {
-                    Text(
-                        text = "Styles",
-                        color = GreenFresh,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Styles",
+                            color = GreenFresh,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium
+                        )
 
-                    Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
+                        Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
 
-                    val stylesItems = listOf("Language", "White/Black")
-                    stylesItems.forEachIndexed { index, item ->
+                        // --- ITEM 1: LANGUAGE (COM DROPDOWN) ---
+                        LanguageSelectorRow()
+
+                        HorizontalDivider(color = Color.Gray.copy(alpha = 0.1f))
+
+                        // --- ITEM 2: THEME (Ainda estático por enquanto) ---
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = 12.dp)
+                                .clickable { /* Lógica para mudar tema futuro */ },
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = item, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+                            Text(text = "Theme (White/Black)", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                             Icon(
                                 painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
                                 contentDescription = null,
                                 tint = Color.Gray,
                                 modifier = Modifier.size(20.dp)
                             )
-                        }
-                        if (index < stylesItems.size - 1) {
-                            HorizontalDivider(color = Color.Gray.copy(alpha = 0.1f))
                         }
                     }
                 }
@@ -217,4 +224,81 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+@Composable
+fun LanguageSelectorRow() {
+    // 1. Estado do Menu (Aberto ou Fechado)
+    var expanded by remember { mutableStateOf(false) }
+
+    // 2. Lista de Idiomas Disponíveis
+    // O par é: "Nome que aparece" to "Código do Android"
+    val languages = mapOf(
+        "English" to "en",
+        "Português" to "pt",
+        "Chinese" to "zh"
+    )
+
+    // Detectar a língua atual (apenas para mostrar o texto correto)
+    // Nota: Isto é simplificado. Num cenário real, podes guardar isto em DataStore.
+    val currentLocale = AppCompatDelegate.getApplicationLocales().toLanguageTags()
+    val displayLanguage = when {
+        currentLocale.contains("pt") -> "Português"
+        currentLocale.contains("zh") -> "Chinese"
+        else -> "English"
+    }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // A Linha Clicável
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true } // 👇 Abre o menu ao clicar
+                .padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(text = "Language", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+                // Mostra a língua selecionada em pequeno
+                Text(text = displayLanguage, color = GreenFresh, fontSize = 12.sp)
+            }
+
+            Icon(
+                painter = painterResource(id = AppIcons.Dashboard.ArrowRight0),
+                contentDescription = null,
+                tint = if (expanded) GreenFresh else Color.Gray, // Muda cor se aberto
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        // O Menu Dropdown (Aparece por cima quando expanded = true)
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color(0xFF2A2A2A)) // Fundo escuro do menu
+        ) {
+            languages.forEach { (name, code) ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = name,
+                            color = if (name == displayLanguage) GreenFresh else Color.White
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        // 👇 A MAGIA QUE MUDA O IDIOMA DA APP
+                        changeAppLanguage(code)
+                    }
+                )
+            }
+        }
+    }
+}
+
+// Função Auxiliar para mudar o idioma nativamente (Android 13+)
+fun changeAppLanguage(languageCode: String) {
+    val appLocale = LocaleListCompat.forLanguageTags(languageCode)
+    AppCompatDelegate.setApplicationLocales(appLocale)
 }

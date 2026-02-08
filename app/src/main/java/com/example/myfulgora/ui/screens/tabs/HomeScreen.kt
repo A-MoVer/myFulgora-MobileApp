@@ -43,7 +43,9 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
+import com.example.myfulgora.R
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import com.example.myfulgora.data.model.BikeState
@@ -360,7 +362,7 @@ fun HomeScreen(
 
                         HomeStatItem(
                             icon = painterResource(id = AppIcons.Dashboard.Status),
-                            value = if (isOnline) "Online" else "Offline",
+                            value = if (isOnline) stringResource(id = R.string.home_status_online) else stringResource(id = R.string.home_status_offline),
                             label = "",
                             statusColor = if (isOnline) GreenFresh else Color.Red // 👈 Define a cor da bolinha
                         )

@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">myFulgora</string>
+
+    <string name="login_welcome">Welcome back, Rider</string>
+    <string name="login_username_hint">Username</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_forgot_password">Forgot Password?</string>
+    <string name="login_button">Login</string>
+    <string name="login_error_empty">Please fill all fields.</string>
+
+    //HOME
+    <string name="home_status_online">Online</string>
+    <string name="home_status_offline">Offline</string>
+    <string name="home_locked">Locked</string>
+    <string name="home_ready">Ready</string>
+
+    //PROFILE
+
+    //MAP
+
+    //BATTERY
+    <string name="battery_title">Battery Info</string>
+    <string name="time_left">Time left</string>
+    <string name="battery_health">Battery Health</string>
+    <string name="battery_temperature">Temperature</string>
+    <string name="battery_consumption">Avg. consumption</string>
+    <string name="battery_charging_cycles">Charging cycles</string>
+
+
+
+
+    //SOCIAL
+
+    //PERFORMANCE
+
+    //SETTINGS
+
+    //MENU HAMBURGER
+
 </resources>

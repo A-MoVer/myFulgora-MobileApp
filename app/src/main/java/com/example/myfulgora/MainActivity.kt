@@ -13,9 +13,10 @@ import com.example.myfulgora.ui.screens.auth.OnboardingScreen
 import com.example.myfulgora.ui.screens.auth.LoginScreen
 import com.example.myfulgora.ui.screens.auth.ForgotPasswordScreen
 import com.example.myfulgora.ui.screens.tabs.MainScreen
+import androidx.appcompat.app.AppCompatActivity
 
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

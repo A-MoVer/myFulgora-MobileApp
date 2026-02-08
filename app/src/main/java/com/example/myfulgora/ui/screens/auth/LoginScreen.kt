@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +32,6 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onForgotPasswordClick: () -> Unit
 ) {
-    // 👇 VOLTAMOS AO BÁSICO: Variáveis locais que funcionam sempre
     var usernameInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
 
@@ -66,7 +66,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Welcome back, Rider",
+                text = stringResource(id = R.string.login_welcome),
                 fontSize = 20.sp,
                 color = Color.Gray
             )
